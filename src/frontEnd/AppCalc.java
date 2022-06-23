@@ -69,7 +69,6 @@ public class AppCalc extends JFrame {
 				y = Double.parseDouble(Display.getText().replaceAll(",", "."));
 				operacao = "+";
 				setOperations((int) y);
-
 			}
 		});
 
@@ -282,6 +281,8 @@ public class AppCalc extends JFrame {
 				y = 0;
 			}
 		});
+		btn_apagatudo.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+
 		JButton btn_apagaultima = new JButton("CE");
 		btn_apagaultima.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -296,13 +297,14 @@ public class AppCalc extends JFrame {
 				operacao = "";
 			}
 		});
-		btn_apagatudo.setFont(new Font("Bahnschrift", Font.PLAIN, 18));
+
+		btn_apagaultima.setFont(new Font("Bahnschrift", Font.PLAIN, 10));
 
 		JButton btn_apaganumeropornumero = new JButton("");
 
 		try {
 			btn_apaganumeropornumero
-					.setIcon(new ImageIcon(this.getClass().getResource("../resource/seta13.png")));
+					.setIcon(new ImageIcon(this.getClass().getResource("../resource/seta.png")));
 		} catch (Exception ex) {
 			System.out.println(ex);
 		}
@@ -322,7 +324,6 @@ public class AppCalc extends JFrame {
 		});
 		btn_apaganumeropornumero.setFont(new Font("Bahnschrift", Font.PLAIN, 13));
 
-		btn_apagaultima.setFont(new Font("Bahnschrift", Font.BOLD, 9));
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(gl_contentPane.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPane
 				.createSequentialGroup().addContainerGap()
@@ -444,39 +445,39 @@ public class AppCalc extends JFrame {
 	private void setOperations(int numb) {
 		if (operacao.equalsIgnoreCase("+")) {
 			result += numb;
-			Display.setText(result + "");
+			Display.setText((int) result + "");
 			painel = "";
 		} else if (operacao.equalsIgnoreCase("-")) {
 			if (start == -1) {
 				result = numb;
-				Display.setText(result + "");
+				Display.setText((int) result + "");
 				painel = "";
 				start = 0;
 			} else {
 				result = -numb + (result);
-				Display.setText(result + "");
+				Display.setText((int) result + "");
 				painel = "";
 			}
 		} else if (operacao.equalsIgnoreCase("*")) {
 			if (start == -1) {
 				result = numb;
-				Display.setText(result + "");
+				Display.setText((int) result + "");
 				painel = "";
 				start = 0;
 			} else {
 				result *= numb;
-				Display.setText(result + "");
+				Display.setText((int) result + "");
 				painel = "";
 			}
 		} else if (operacao.equalsIgnoreCase("/")) {
 			if (start == -1) {
 				result = numb;
-				Display.setText(result + "");
+				Display.setText((int) result + "");
 				painel = "";
 				start = 0;
 			} else {
 				result /= numb;
-				Display.setText(result + "");
+				Display.setText((int) result + "");
 				painel = "";
 			}
 		}
