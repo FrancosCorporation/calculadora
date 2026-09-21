@@ -1,5 +1,25 @@
 # Calculadora
 
+## 🐳 Instalação e Execução (Docker) — recomendado
+
+### Pré-requisitos
+- [Docker](https://docs.docker.com/get-docker/) + Docker Compose
+
+### Rodar com Docker
+```bash
+docker compose up --build
+```
+Para servir via container:
+```bash
+docker run --rm -p 8080:80 -v $(pwd):/usr/share/nginx/html:ro nginx:alpine
+```
+
+### Sem Docker (local)
+```bash
+# abre o index.html no navegador
+open index.html
+```
+
 Calculadora desktop em Java Swing — **projeto de estudo** desenvolvido em 2022.
 
 ![Java](https://img.shields.io/badge/Java-8-orange?logo=openjdk&logoColor=white)
