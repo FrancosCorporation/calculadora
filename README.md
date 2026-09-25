@@ -1,82 +1,65 @@
-# Calculadora
+# Calcu By Dolfim
 
-## 🐳 Instalação e Execução (Docker) — recomendado
-
-### Pré-requisitos
-- [Docker](https://docs.docker.com/get-docker/) + Docker Compose
-
-### Rodar com Docker
-```bash
-docker compose up --build
-```
-Para servir via container:
-```bash
-docker run --rm -p 8080:80 -v $(pwd):/usr/share/nginx/html:ro nginx:alpine
-```
-
-### Sem Docker (local)
-```bash
-# abre o index.html no navegador
-open index.html
-```
-
-Calculadora desktop em Java Swing — **projeto de estudo** desenvolvido em 2022.
-
-![Java](https://img.shields.io/badge/Java-8-orange?logo=openjdk&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES2022-yellow?logo=javascript&logoColor=white)
+![Node](https://img.shields.io/badge/node-%3E%3D18-green?logo=node.js&logoColor=white)
+![Tests](https://img.shields.io/badge/testes-17%2F17%20passando-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Status](https://img.shields.io/badge/status-conclu%C3%ADdo%20(estudo)-blue)
 
-## Sobre
+Calculadora web — versão (2026) do projeto **Java Swing** `AppCalc.java` ("Calcu By Dolfim", 2022),
+com o fonte original preservado em [`java/frontEnd/AppCalc.java`](java/frontEnd/AppCalc.java).
 
-Aplicativo de calculadora com interface gráfica (janela `JFrame`) construído com Java Swing e `GroupLayout`.
-Foi um dos primeiros projetos de programação do autor, feito para praticar interfaces, eventos de botões e
-tratamento de números em Java. É um **projeto de estudo**, não um produto.
+## Instalação e execução
+
+Requer [Node.js 18+](https://nodejs.org/). Sem dependências externas:
+
+```bash
+npm install   # no-op (zero dependências)
+npm start     # abre http://localhost:3000
+npm test      # 17 testes de lógica (operações, formatação, dígitos, backspace)
+```
+
+> Alternativa sem Node: serve `index.html` em qualquer servidor estático (a calculadora é 100% client-side).
 
 ## Funcionalidades
 
-- Operações básicas: soma, subtração, multiplicação e divisão (`+`, `-`, `*`, `/`).
-- Visor numérico com `JFormattedTextField` aceitando apenas números.
-- Botões `C` (limpa tudo), `CE` (limpa operação) e botão de apagar último dígito.
-- Suporte a teclado para os dígitos 0–9 e para a tecla `+` do teclado numérico.
-- Botão de vírgula decimal.
-- Ícone do botão de apagar carregado de `src/resource/seta.png`.
+- Layout fiel ao Swing original: display alinhado à direita, teclado 4 colunas,
+  fundo cinza `SystemColor.inactiveCaption`, fonte **Bahnschrift**.
+- Operações `+ − × ÷` com encadeamento acumulado (2 + 3 + 4 = 9) e `=`.
+- `C` limpa a entrada · `CE` reseta tudo · `⌫` apaga o último dígito (botão "seta" do original).
+- Vírgula decimal pt-BR (única, como no original).
+- **Teclado físico** suportado (dígitos, operações, Enter = igual, Backspace, Esc = CE),
+  como o `KeyListener` do Java.
+- Divisão por zero exibe **Erro** (o original estourava o cast `(int)` — corrigido).
 
-## Stack
+### Fidelidade e correções em relação ao Java de 2022
 
-- **Java 8** (Eclipse `JavaSE-1.8`).
-- **Java Swing / AWT** (`JFrame`, `JButton`, `JPanel`, `GroupLayout`, `KeyAdapter`).
-- Projeto configurado para **Eclipse** (`.classpath`, `.project`).
+O `AppCalc.java` original acumulava tudo com **casts `(int)`**, perdendo casas decimais
+(`9 ÷ 2` mostrava `4`). A versão web mantém o mesmo comportamento de interação
+(dígitos com regra do zero à esquerda, C/CE/backspace, operação imediata acumulada)
+com **aritmética de ponto flutuante correta**.
 
-## Como rodar
-
-Requer JDK 8+ instalado. Não há build automatizado (Maven/Gradle) no repositório — o projeto é Eclipse puro.
-
-Via linha de comando, a partir da raiz do repositório:
-
-```bash
-javac -d bin src/frontEnd/AppCalc.java
-java -cp bin frontEnd.AppCalc
-```
-
-Ou importe a pasta no Eclipse/IntelliJ como projeto Java existente e execute a classe `frontEnd.AppCalc`.
-
-> Observação: o `.classpath` da raiz referencia as bibliotecas `miglayout15-swing.jar` e
-> `jgoodies-forms-1.8.0.jar`, que **não** estão versionadas neste repositório (existem apenas na cópia
-> deste projeto dentro do repositório [Portfolio](https://github.com/FrancosCorporation/Portfolio)).
-> O código de `AppCalc.java` não usa essas bibliotecas.
-
-## Estrutura do projeto
+## Estrutura
 
 ```
 calculadora/
-├── index.html                  # página estática (GitHub Pages) apontando para o código
-├── src/
-│   ├── frontEnd/
-│   │   └── AppCalc.java        # classe principal (main) da calculadora
-│   └── resource/
-│       └── seta.png            # ícone do botão de apagar
-├── .classpath / .project       # configuração Eclipse
-└── README.md
+├── index.html          # layout fiel ao GroupLayout do Swing
+├── style.css
+├── js/
+│   ├── calc-core.js    # lógica pura (testável em Node)
+│   └── app.js          # UI + teclado físico
+├── test/calc-test.mjs  # 17 testes (npm test)
+├── server.js           # servidor estático Node puro (zero deps)
+└── java/               # ✔ PROJETO ORIGINAL 2022 (workspace Eclipse) preservado
+    ├── frontEnd/AppCalc.java
+    └── resource/       # seta.png e demais ícones do original
+```
+
+### Rodar a versão Java original (histórica)
+
+```bash
+cd java
+javac frontEnd/AppCalc.java
+java -cp .:frontEnd frontEnd.AppCalc   # Windows: -cp ".;frontEnd"
 ```
 
 ## Licença

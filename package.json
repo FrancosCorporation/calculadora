@@ -1,0 +1,11 @@
+{
+  "name": "calcu-by-dolfim",
+  "version": "2.0.0",
+  "description": "Calculadora web - versao do projeto Java/Swing AppCalc (Calcu By Dolfim)",
+  "main": "server.js",
+  "type": "module",
+  "license": "MIT",
+  "author": "Rodolfo Franco (FrancosCorporation)",
+  "scripts": { "start": "node server.js", "test": "node test/calc-test.mjs" },
+  "engines": { "node": ">=18" }
+}

@@ -1,7 +1,45 @@
-<html lang="en">
-
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calcu By Dolfim</title>
+  <meta name="description" content="Calculadora web — versão do projeto Java/Swing AppCalc (Calcu By Dolfim).">
+  <link rel="stylesheet" href="style.css">
+</head>
 <body>
-    <div>Heloou Word</div>
-    <a href="https://francoscorporation.github.io/calculadora/src/frontEnd/AppCalc.java">Click Here</a>
+  <main class="calc">
+    <input id="display" type="text" value="0" readonly inputmode="decimal" aria-label="Display">
+
+    <section class="controles">
+      <button id="btn-backspace" class="btn fn" title="Apagar último dígito">⌫</button>
+      <button id="btn-ce" class="btn fn" title="Limpar tudo (CE)">CE</button>
+      <button id="btn-c" class="btn fn" title="Limpar entrada (C)">C</button>
+    </section>
+
+    <section class="teclado">
+      <button class="btn num" data-n="7">7</button>
+      <button class="btn num" data-n="8">8</button>
+      <button class="btn num" data-n="9">9</button>
+      <button class="btn op" data-op="/">÷</button>
+
+      <button class="btn num" data-n="4">4</button>
+      <button class="btn num" data-n="5">5</button>
+      <button class="btn num" data-n="6">6</button>
+      <button class="btn op" data-op="*">×</button>
+
+      <button class="btn num" data-n="1">1</button>
+      <button class="btn num" data-n="2">2</button>
+      <button class="btn num" data-n="3">3</button>
+      <button class="btn op" data-op="-">−</button>
+
+      <button class="btn num zero" data-n="0">0</button>
+      <button id="btn-virgula" class="btn num">,</button>
+      <button class="btn op" data-op="+">+</button>
+      <button id="btn-igual" class="btn op igual">=</button>
+    </section>
+  </main>
+
+  <script src="js/app.js"></script>
 </body>
 </html>

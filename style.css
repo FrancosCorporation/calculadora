@@ -1,0 +1,68 @@
+:root {
+  --fundo-janela: #bfc3c7;        /* fiel ao SystemColor.inactiveCaption do Swing */
+  --tecla: #f0f0f0;
+  --tecla-clique: #d9d9d9;
+  --tecla-num: #ffffff;
+  --tecla-fn: #ffd54d;
+  --tecla-op: #90caf9;
+  --borda: #6b7075;
+  --texto: #111;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: "Bahnschrift", "Segoe UI", Arial, sans-serif;
+  background: #14181d;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.calc {
+  background: var(--fundo-janela);
+  border: 3px solid var(--borda);
+  border-radius: 8px;
+  padding: 10px;
+  width: min(330px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#display {
+  font-family: inherit;
+  font-size: 26px;
+  text-align: right;
+  padding: 18px 12px;
+  border: 2px inset var(--borda);
+  background: #fff;
+  color: var(--texto);
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.controles, .teclado {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.btn {
+  font-family: inherit;
+  font-size: 18px;
+  border: 2px outset var(--borda);
+  background: var(--tecla);
+  border-radius: 4px;
+  padding: 12px 0;
+  cursor: pointer;
+  color: var(--texto);
+}
+
+.btn:active { border-style: inset; background: var(--tecla-clique); }
+.num { background: var(--tecla-num); }
+.fn { background: var(--tecla-fn); font-size: 15px; }
+.op { background: var(--tecla-op); font-weight: 700; }
+.igual { background: #64b5f6; }
