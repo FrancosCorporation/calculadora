@@ -21,7 +21,7 @@ npm test      # 17 testes de lógica (operações, formatação, dígitos, backs
 
 O servidor local publica apenas a calculadora e os arquivos da allowlist em `server.js`; não entrega `.git`, fontes Java, arquivos de configuração ou testes. Por padrão escuta em `127.0.0.1`. Para disponibilizar na rede, defina `HOST=0.0.0.0` conscientemente.
 
-Também é possível executar em container com `docker build -t calcu-by-dolfim .` e `docker run --rm -p 3349:3349 calcu-by-dolfim`.
+Também é possível executar em container com `docker build -t calcu-by-dolfim .` e `docker run --rm -p 127.0.0.1:3349:3349 calcu-by-dolfim`. A porta fica acessível apenas na própria máquina; para disponibilizar na rede, publique a porta conscientemente.
 
 > Alternativa sem Node: serve `index.html` em qualquer servidor estático (a calculadora é 100% client-side).
 

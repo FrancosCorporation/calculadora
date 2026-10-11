@@ -15,6 +15,7 @@
   para resolver o import de `js/calc-core.js`.
 - Criados workflow de CI, Dockerfile e `SECURITY.md`. CI, build/container e CSP no navegador ainda nao
   foram validados.
+- O exemplo Docker do README publica a porta somente em `127.0.0.1`, em linha com o padrao local do servidor.
 - `TEST-01` segue pendente; a suite existente nao foi alterada nem executada nesta rodada.
 
 ---
@@ -240,7 +241,7 @@ Calculadora client-side com teclado na tela e suporte ao teclado físico. O núc
 - **Mudança:** imagem Node enxuta, copiando somente `index.html`, `404.html`, `style.css`, `js/app.js`,
   `js/calc-core.js`, `js/erro.js` e `server.js`.
 - **Aceite:** `docker build` + `run` serve o jogo; `.git` nem existe na imagem.
-- **Verificação:** `docker build -t calcu-by-dolfim . && docker run --rm -p 3349:3349 calcu-by-dolfim`; consultar `/index.html`.
+- **Verificação:** `docker build -t calcu-by-dolfim . && docker run --rm -p 127.0.0.1:3349:3349 calcu-by-dolfim`; consultar `/index.html`.
 
 ---
 
