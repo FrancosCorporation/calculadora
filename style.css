@@ -66,3 +66,17 @@ body {
 .fn { background: var(--tecla-fn); font-size: 15px; }
 .op { background: var(--tecla-op); font-weight: 700; }
 .igual { background: #64b5f6; }
+.aviso-js {
+  max-width: 620px;
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border: 1px solid #d99b3d;
+  border-radius: 6px;
+  background: #3c3020;
+  color: #ffe0a3;
+  text-align: center;
+}
+#erro-js[hidden] { display: none; }
+.pagina-404 { max-width: 620px; margin: auto; color: #eee; text-align: center; }
+.pagina-404 p { margin: 14px 0 20px; }
+.pagina-404 a { color: #90caf9; }

@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <noscript><p class="aviso-js">Ative o JavaScript no navegador para usar a calculadora.</p></noscript>
+  <p id="erro-js" class="aviso-js" role="alert" hidden></p>
   <main class="calc">
     <input id="display" type="text" value="0" readonly inputmode="decimal" aria-label="Display">
 
@@ -40,6 +42,7 @@
     </section>
   </main>
 
-  <script src="js/app.js"></script>
+  <script src="/js/erro.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>

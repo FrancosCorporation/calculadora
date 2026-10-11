@@ -1,10 +1,21 @@
 # MELHORIAS — calculadora
 
 > **Gerado por analise de codigo em 2026-10-02** · Stack: Node 18 (servidor estatico sem framework) + JS puro no browser, **zero dependencias**
-> Branch `main` · 150 LOC · **1 suite(s) de teste** · sem CI · porta padrao `3000`
+> Branch `master` · 150 LOC · **1 suite de teste** · sem CI · porta padrao `3349`
 >
 > **Este arquivo e um plano de execucao.** Cada item tem ID, `arquivo:linha`, mudanca exata,
 > criterio de aceite e comando de verificacao.
+
+## Status de implementacao — 2026-10-11
+
+- Implementados no codigo: allowlist, headers/CSP, tratamento de URL invalida, ETag/cache, pagina 404,
+  fallback para falha de JavaScript e bind local. O servidor ja usava leitura assincrona antes desta
+  atualizacao. A porta padrao mudou de 3000 para 3349.
+- Corrigido o carregamento de `js/app.js`: a página agora declara o script como módulo, necessário
+  para resolver o import de `js/calc-core.js`.
+- Criados workflow de CI, Dockerfile e `SECURITY.md`. CI, build/container e CSP no navegador ainda nao
+  foram validados.
+- `TEST-01` segue pendente; a suite existente nao foi alterada nem executada nesta rodada.
 
 ---
 
@@ -22,26 +33,26 @@
 
 ## 1. Diagnostico executivo
 
-Calculadora que roda inteiro no browser: o jogador joga, o motor (minimax/heuristica) avalia candidatos
-e um LLM local escolhe **entre** eles. Sem build, sem servidor de logica, zero dependencias.
+Calculadora client-side com teclado na tela e suporte ao teclado físico. O núcleo das operações fica em
+`js/calc-core.js`; o servidor Node serve somente os arquivos estáticos da interface.
 
 **O que esta bem (nao reaca):**
 
 | Item | Evidencia |
 |---|---|
-| LLM escolhe **entre candidatos do minimax**, nunca inventa jogada | ver `llm.js` / suites |
-| Fallback para minimax/heuristica: o jogo **nunca** trava se o LLM falhar | ver `llm.js` / suites |
-| `system`/`user` separados no prompt do LLM | ver `llm.js` / suites |
-| Falha de WebGPU distinguida de falha de download (nao mascara erro de rede) | ver `llm.js` / suites |
-| Zero dependencias de runtime (só `node server.js`) | ver `llm.js` / suites |
+| Núcleo da calculadora é separado da UI e testável no Node | `js/calc-core.js`, `test/calc-test.mjs` |
+| Operações e formatação pt-BR sem dependências externas | `js/calc-core.js` |
+| Teclado físico e botões da tela usam as mesmas funções | `js/app.js` |
+| Servidor estático usa Node puro, sem dependências | `server.js`, `package.json` |
 
-**O que esta quebrado:**
+**Falhas da analise inicial e estado atual:**
 
-1. **O servidor serve o repositorio git inteiro** — validado **em execucao real**: `GET /.git/config`
-   -> **200**. A guarda de path traversal esta correta (`startsWith(RAIZ)`, e `GET /../etc/passwd`
-   -> 404), mas **nao** bloqueia dotfiles *dentro* da raiz — e `.git/` esta nela.
-2. Sem allowlist do que e servido (vale para `package.json`, `test/`, e qualquer arquivo futuro).
-3. Sem CI — os testes so rodam se alguem lembrar.
+1. O servidor permitia ler `.git` e qualquer arquivo sob a raiz. Agora cada rota precisa constar em
+   `PUBLICOS`; fontes Java, configuracoes, documentacao e testes ficam fora da lista.
+2. O servidor ja usava leitura assincrona; agora tambem configura MIME, headers, CSP, ETag/cache,
+   bind local e 404 amigavel.
+3. O workflow de CI foi criado para Node 18 e 22; sua execucao no GitHub ainda nao foi confirmada.
+4. A porta padrao mudou de 3000 para 3349 para evitar colisao com os projetos vizinhos.
 
 ---
 
@@ -55,14 +66,14 @@ e um LLM local escolhe **entre** eles. Sem build, sem servidor de logica, zero d
 | SEC-04 | `decodeURIComponent` sem try/catch derruba a requisicao | **P1** | `server.js:11` | — |
 | BUG-01 | Servidor le arquivo **sincrono** a cada request | **P2** | `server.js:20` | — |
 | IMP-01 | Sem cache de assets (revalida a cada load) | **P2** | `server.js:19-20` | — |
-| IMP-02 | Sem CSP (o jogo carrega WASM/WebGPU) | **P2** | `server.js:19` | SEC-03 |
+| IMP-02 | Sem CSP para a calculadora estática | **P2** | `server.js:19` | SEC-03 |
 | IMP-03 | Sem `404` amigavel / pagina de erro | **P3** | `server.js:15-17` | — |
 | TEST-01 | Testes nao cobrem o servidor (so a logica) | **P1** | `test/` | SEC-01 |
 | DEVOPS-01 | Sem CI | **P2** | *(ausente)* | — |
 | DEVOPS-02 | Sem Dockerfile | **P3** | *(ausente)* | — |
 | DOC-01 | README nao avisa que expor o servidor expoe o repo | **P2** | `README.md` | SEC-01 |
 
-**Placar: 2 P0 · 3 P1 · 4 P2 · 2 P3 = 11 itens.**
+**Placar: 2 P0 · 3 P1 · 5 P2 · 2 P3 = 12 itens.**
 
 ---
 
@@ -96,9 +107,9 @@ e um LLM local escolhe **entre** eles. Sem build, sem servidor de logica, zero d
 - **Aceite:** `GET /.git/config`, `/.git/HEAD`, `/.env` -> **404**; `/index.html`, `/js/...` -> **200**.
 - **Verificação:**
   ```bash
-  PORT=3000 node server.js & sleep 1
+  PORT=3349 node server.js & sleep 1
   for p in /.git/config /.git/HEAD /.env .gitignore; do
-    curl -s -o /dev/null -w "$p -> %{http_code}\n" "http://localhost:3000$p"   # esperado 404
+    curl -s -o /dev/null -w "$p -> %{http_code}\n" "http://localhost:3349$p"   # esperado 404
   done
   kill %1
   ```
@@ -115,7 +126,7 @@ e um LLM local escolhe **entre** eles. Sem build, sem servidor de logica, zero d
 - **Verificação:**
   ```bash
   for p in /package.json /README.md; do
-    curl -s -o /dev/null -w "$p -> %{http_code}\n" "http://localhost:3000$p"   # 404
+    curl -s -o /dev/null -w "$p -> %{http_code}\n" "http://localhost:3349$p"   # 404
   done
   ```
 
@@ -130,7 +141,7 @@ e um LLM local escolhe **entre** eles. Sem build, sem servidor de logica, zero d
 - **Aceite:** respostas trazem `nosniff` e `X-Frame-Options`.
 - **Verificação:**
   ```bash
-  curl -sI http://localhost:3000/index.html | grep -iE 'x-content-type-options|x-frame-options'
+  curl -sI http://localhost:3349/index.html | grep -iE 'x-content-type-options|x-frame-options'
   ```
 
 ### SEC-04 · `decodeURIComponent` sem try/catch · [P1]
@@ -144,7 +155,7 @@ e um LLM local escolhe **entre** eles. Sem build, sem servidor de logica, zero d
 - **Aceite:** `GET /%` -> **400**, sem excecao no log.
 - **Verificação:**
   ```bash
-  curl -s -o /dev/null -w '%{http_code}\n' 'http://localhost:3000/%'   # 400
+  curl -s -o /dev/null -w '%{http_code}\n' 'http://localhost:3349/%'   # 400
   ```
 
 ---
@@ -168,18 +179,17 @@ e um LLM local escolhe **entre** eles. Sem build, sem servidor de logica, zero d
 - **Impacto:** cada reload rebaixa `js/*.js`. Pequeno, mas sao requisicoes repetidas sem cache HTTP.
 - **Mudança:** `ETag` (hash no boot) + `Cache-Control` curto p/ HTML, longo p/ JS; responder `304`.
 - **Aceite:** segundo request do mesmo asset -> `304`.
-- **Verificação:** `curl -sI http://localhost:3000/js/llm.js | grep -iE 'etag|cache-control'`
+- **Verificação:** `curl -sI http://localhost:3349/js/calc-core.js | grep -iE 'etag|cache-control'`
 
-### IMP-02 · Sem CSP (WASM/WebGPU) · [P2]
+### IMP-02 · Sem CSP · [P2]
 
 - **Arquivo:** `server.js:19`
 - **Evidência:** nenhuma `Content-Security-Policy`.
-- **Impacto:** o jogo carrega WASM (llama.cpp em WebAssembly). Sem CSP, uma injecao futura no JS
-  roda sem restricao. (Defense em profundidade — `SEC-03` ja cobre o essencial.)
-- **Mudança:** CSP com `default-src 'self'`, `script-src 'self'`, `wasm-unsafe-eval` (necessario),
-  e `connect-src` do modelo. **Testar que o jogo ainda carrega o WASM.**
-- **Aceite:** CSP presente e o jogo + modelo **ainda funcionam**.
-- **Verificação:** `curl -sI .../index.html | grep -i content-security-policy` + abrir no browser
+- **Impacto:** a calculadora usa JavaScript e CSS locais; sem CSP, uma injecao futura no documento
+  poderia carregar scripts ou estilos de outra origem.
+- **Mudança:** CSP restritiva para assets locais (`default-src 'self'`, sem scripts inline).
+- **Aceite:** CSP presente e os assets locais permitidos.
+- **Verificação:** `curl -sI .../index.html | grep -i content-security-policy` e conferir no browser.
 
 ### IMP-03 · Sem `404` amigavel / pagina de erro · [P3]
 
@@ -189,7 +199,7 @@ e um LLM local escolhe **entre** eles. Sem build, sem servidor de logica, zero d
 - **Mudança:** rota `.html` desconhecida cai no `index.html` (SPA-like) ou 404 estilizado; `<noscript>`
   + `window.onerror` com aviso em vez de tela branca.
 - **Aceite:** rota desconhecida mostra a pagina do jogo (ou 404 estilizado).
-- **Verificação:** `curl -s http://localhost:3000/qualquer | head -1` mostra HTML
+- **Verificação:** `curl -s http://localhost:3349/qualquer | head -1` mostra HTML
 
 ---
 
@@ -197,8 +207,8 @@ e um LLM local escolhe **entre** eles. Sem build, sem servidor de logica, zero d
 
 ### TEST-01 · Testes nao cobrem o servidor (so a logica) · [P1]
 
-- **Arquivo:** `test/` (1 suite(s))
-- **Evidência:** os testes cobrem **exclusivamente** regras/IA/LLM. Nenhum toca o server.js — por isso
+- **Arquivo:** `test/calc-test.mjs`
+- **Evidência:** os testes cobrem a lógica de cálculo; nenhum toca o server.js — por isso
   o `.git` exposto (P0) e o `decodeURIComponent` passaram despercebidos.
 - **Impacto:** o servidor e a superficie de rede, e esta **sem nenhum teste**. Os P0 sao exatamente o
   que um teste de rota pegaria.
@@ -217,7 +227,7 @@ e um LLM local escolhe **entre** eles. Sem build, sem servidor de logica, zero d
 - **Arquivo:** *(ausente)* `.github/workflows/`
 - **Evidência:** `package.json` tem `test` mas nenhum workflow o executa.
 - **Impacto:** os testes so rodam se alguem lembrar; o servidor nem e exercitado.
-- **Mudança:** `ci.yml` com `npm ci`, `npm test`, `node --check server.js js/*.js`.
+- **Mudança:** `ci.yml` com `npm ci`, `npm run check` e `npm test`.
 - **Aceite:** PR que quebra o jogo e bloqueado.
 - **Verificação:** `npm test 2>&1 | tail -2 && node --check server.js`
 
@@ -227,9 +237,10 @@ e um LLM local escolhe **entre** eles. Sem build, sem servidor de logica, zero d
 - **Evidência:** roda com `node server.js` (zero deps).
 - **Impacto:** baixo, mas o Dockerfile resolve o `SEC-01` por **construcao**: copiar so o necessario
   (`.git` nunca entra na imagem).
-- **Mudança:** `FROM node:20-alpine`, `COPY index.html style.css js/ server.js ./`, `CMD ["node","server.js"]`.
+- **Mudança:** imagem Node enxuta, copiando somente `index.html`, `404.html`, `style.css`, `js/app.js`,
+  `js/calc-core.js`, `js/erro.js` e `server.js`.
 - **Aceite:** `docker build` + `run` serve o jogo; `.git` nem existe na imagem.
-- **Verificação:** `docker build -t j . && docker run --rm -p 3000:3000 j &` + `curl /index.html` 200
+- **Verificação:** `docker build -t calcu-by-dolfim . && docker run --rm -p 3349:3349 calcu-by-dolfim`; consultar `/index.html`.
 
 ---
 
@@ -277,15 +288,13 @@ e um LLM local escolhe **entre** eles. Sem build, sem servidor de logica, zero d
 |---|---|---|
 | Migrar o servidor para Express | **Nao** | Zero deps e escolha de qualidade; a allowlist resolve em ~8 linhas. |
 | Servir via GitHub Pages | **Nao, aqui** | Compativel (estatico), mas e decisao de deploy — mencionar no `DOC-01`. |
-| Colocar o LLM num servidor/API | **Nunca** | LLM local e o diferencial: zero chave, privacidade. Nao regredir. |
-| Trocar o modelo default | **Nao** | Dois modelos com fallback CPU/GPU ja. Performance e escolha. |
-| **Porta 3000 colide com o frontend CRA** (mesmo problema). **Sem LLM**, mas o `server.js` e identico — o `.git` exposto e o mesmo defeito. | **Revisar** | Especifico deste projeto — ver secao 1. |
+| Servir os fontes Java históricos | **Nao** | A calculadora web precisa apenas dos assets listados na allowlist. |
+| Porta padrao 3000 | **Corrigido** | Agora usa 3349, configuravel por `PORT`. |
 
 **Riscos desta execucao:**
 
-- **`SEC-02` (allowlist) pode quebrar o jogo** se faltar um asset (`.wasm`, fonte, favicon). Testar o
-  jogo **inteiro** no browser apos a mudanca (jogar, ativar a IA, baixar o modelo).
-- **`IMP-02` (CSP) pode quebrar o WASM** se faltar `wasm-unsafe-eval` — testar no browser, nao so o header.
+- **`SEC-02` (allowlist) pode quebrar a calculadora** se faltar o HTML, CSS ou algum script local.
+- **`IMP-02` (CSP) deve permitir os scripts e estilos locais**; conferir no browser após o deploy.
 - **Este defeito e da serie inteira** — replicar em `xadrez_ia`, `damas_ia`, `lig4_ia`, `botao_ia`,
   `jogo_da_velha_ia`, `calculadora`. Ver `PLANO_MELHORIAS_MASTER.md`.
 
@@ -294,32 +303,32 @@ e um LLM local escolhe **entre** eles. Sem build, sem servidor de logica, zero d
 ## 10. Definicao de pronto (DoD)
 
 **Seguranca**
-- [ ] `SEC-01` — `/.git/config`, `/.git/HEAD`, `/.env` -> 404
-- [ ] `SEC-02` — `/package.json`, `/test/*` -> 404
-- [ ] `SEC-03` — `nosniff`, `X-Frame-Options`, `Referrer-Policy`
-- [ ] `SEC-04` — `/%` -> 400, sem excecao no log
+- [x] `SEC-01` — `.git`, dotfiles e rotas nao publicas sao recusados pela allowlist
+- [x] `SEC-02` — allowlist exata contem somente os arquivos usados pela calculadora
+- [x] `SEC-03` — headers de seguranca configurados em todas as respostas
+- [x] `SEC-04` — caminho malformado retorna 400
 
 **Funcional**
-- [ ] `BUG-01` — requisicoes concorrentes nao se bloqueiam
-- [ ] `IMP-01` — asset com `ETag` -> `304` na segunda
-- [ ] `IMP-02` — CSP presente e o jogo + WASM **ainda funcionam**
-- [ ] `IMP-03` — rota desconhecida mostra a pagina (ou 404 estilizado)
+- [x] `BUG-01` — servidor ja usava leitura assincrona antes desta atualizacao
+- [x] `IMP-01` — ETag e Cache-Control implementados
+- [ ] `IMP-02` — CSP implementada; validacao no browser pendente
+- [x] `IMP-03` — rota desconhecida usa pagina 404 amigavel e ha aviso para falhas JS
 
 **Testes e infra**
 - [ ] `TEST-01` — suite do servidor cobrindo os 2 P0
-- [ ] `DEVOPS-01` — CI rodando `npm test`
-- [ ] `DEVOPS-02` — Dockerfile servindo so o necessario
-- [ ] `DOC-01` — README sobre servir com seguranca
+- [ ] `DEVOPS-01` — workflow criado; execucao CI ainda nao confirmada
+- [ ] `DEVOPS-02` — Dockerfile copia somente arquivos publicos; build/run ainda nao confirmados
+- [x] `DOC-01` — README documenta allowlist, porta local e bind de rede intencional
 
 **Validacao final:**
 ```bash
 npm test 2>&1 | tail -2 && node --check server.js
-PORT=3000 node server.js & sleep 1
-curl -s -o /dev/null -w '/.git/config -> %{http_code}\n' http://localhost:3000/.git/config   # 404
+PORT=3349 node server.js & sleep 1
+curl -s -o /dev/null -w '/.git/config -> %{http_code}\n' http://localhost:3349/.git/config   # 404
 kill %1
 ```
 
 ---
 
-*Fim do plano. Gerado por leitura direta do codigo em 2026-10-02. Nenhum item ja estava corrigido*
-*— todos apontam para defeitos ainda presentes.*
+*Plano inicial gerado em 2026-10-02. `BUG-01` ja estava resolvido na base; os demais itens listados
+foram confirmados antes desta implementacao.*

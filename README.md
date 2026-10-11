@@ -13,10 +13,15 @@ com o fonte original preservado em [`java/frontEnd/AppCalc.java`](java/frontEnd/
 Requer [Node.js 18+](https://nodejs.org/). Sem dependências externas:
 
 ```bash
-npm install   # no-op (zero dependências)
-npm start     # abre http://localhost:3000
+npm ci         # instala a árvore sem dependências externas
+npm start     # abre http://localhost:3349
+npm run check # verifica a sintaxe dos arquivos JavaScript
 npm test      # 17 testes de lógica (operações, formatação, dígitos, backspace)
 ```
+
+O servidor local publica apenas a calculadora e os arquivos da allowlist em `server.js`; não entrega `.git`, fontes Java, arquivos de configuração ou testes. Por padrão escuta em `127.0.0.1`. Para disponibilizar na rede, defina `HOST=0.0.0.0` conscientemente.
+
+Também é possível executar em container com `docker build -t calcu-by-dolfim .` e `docker run --rm -p 3349:3349 calcu-by-dolfim`.
 
 > Alternativa sem Node: serve `index.html` em qualquer servidor estático (a calculadora é 100% client-side).
 
