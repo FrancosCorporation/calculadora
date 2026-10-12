@@ -333,3 +333,8 @@ kill %1
 
 *Plano inicial gerado em 2026-10-02. `BUG-01` ja estava resolvido na base; os demais itens listados
 foram confirmados antes desta implementacao.*
+
+## Reauditoria da CI — 2026-10-11
+
+- CI remota `38161721212` passou em Node 18 e 22. Node 18 está EOL; atualizei engine mínima para Node 22, matriz para Node 22/24, GitHub Actions para v7/Node 24 e runner para `ubuntu-24.04`.
+- Nenhum teste foi adicionado ou executado nesta retomada. A alteração de CI foi publicada com `[skip ci]`; validação de CSP no browser/container continua pendente.

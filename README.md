@@ -1,7 +1,7 @@
 # Calcu By Dolfim
 
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES2022-yellow?logo=javascript&logoColor=white)
-![Node](https://img.shields.io/badge/node-%3E%3D18-green?logo=node.js&logoColor=white)
+![Node](https://img.shields.io/badge/node-%3E%3D22-green?logo=node.js&logoColor=white)
 ![Tests](https://img.shields.io/badge/testes-17%2F17%20passando-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -10,7 +10,7 @@ com o fonte original preservado em [`java/frontEnd/AppCalc.java`](java/frontEnd/
 
 ## Instalação e execução
 
-Requer [Node.js 18+](https://nodejs.org/). Sem dependências externas:
+Requer [Node.js 22+](https://nodejs.org/). Sem dependências externas:
 
 ```bash
 npm ci         # instala a árvore sem dependências externas

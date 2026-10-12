@@ -11,5 +11,5 @@
     "check": "node --check server.js && node --check js/erro.js && node --check js/app.js && node --check js/calc-core.js",
     "test": "node test/calc-test.mjs"
   },
-  "engines": { "node": ">=18" }
+  "engines": { "node": ">=22" }
 }
